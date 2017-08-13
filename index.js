@@ -1,4 +1,4 @@
-var fs = require('fs');
+var touch = require('touch');
 
 function WebpackTouch(options) {
   var options = options || {};
@@ -11,12 +11,11 @@ function WebpackTouch(options) {
   }
 }
 
-WebpackTouch.prototype.write = function() {
-  fs.writeFile(this.filename, 'DONE', {flag: 'w+'}, function(err) {
-    if (err) {
-      console.error(err)
-    }
-  });
+WebpackTouch.prototype.touch = function() {
+  touch(this.filename)
+    .then(function(){}, function (err) {
+      console.log("Touch error:", err);
+    });
 };
 
 WebpackTouch.prototype.apply = function(compiler) {
@@ -31,10 +30,10 @@ WebpackTouch.prototype.apply = function(compiler) {
       }
     }
     if (this.delay) {
-      setTimeout(this.write.bind(this), this.delay);
+      setTimeout(this.touch.bind(this), this.delay);
       return
     }
-    this.write();
+    this.touch();
   }.bind(this));
 };
 
